@@ -5,16 +5,15 @@ Use this module to automate Keycloak configuration.
 
 ## Keycloak Resources
 
-In Keycloak defines all configuration is defined as Rest resources. This resources can be:
+In Keycloak every part of the configuration is defined in the server as a [Restful Resource](https://en.wikipedia.org/wiki/Representational_state_transfer), this makes it easy for us to think about configuration. An example of this resources are: 
+
 - clients
 - roles
 - groups
 - components (like Federation, Realms Key Configuration, etc).
 - users
 
-
-To interact with this resources we can use the resource module provided in this Ansible module.
-
+This ansible module basically provides a way to store Keycloak configuration as code, so we can rebuild a Keycloak instance from scratch without visiting the UI.  
 
 ## Adding One Resource
 
@@ -38,7 +37,7 @@ In this example we are going to use the resource module to create a [realm](http
 Where:
 
 - **name**: represents the resource name in Keycloak.
-- **id**: allow us to target the field we want to use as unique identifier.
+- **id**: allow us to target the field we want to use as a unique identifier.
   - In this case the unique identifier is ``id`` for realm, but other resources may have a different unique field such as ``groups`` that uses ``name`` as the unique identifier.
 - **token**: we have to provide a OpenID token with permissions to perform the operation.
 - **endpoint**: the root http(s) endpoint for the Keycloak server.
@@ -61,10 +60,11 @@ Where:
 This module ``keycloak.resources_from_folder`` publishes all the resources in a given folder path.
 
 ### Usage
-So in this example we want users belonging to this folder:
+So in this example we want to configure a set of users into keycloak, so first we define each user in a folder like this:
 
+![](https://github.com/cesarvr/keycloak-ansible-module/blob/main/docs/from_folder.png?raw=true)
 
-Each file has a structure similar to this one:
+Make sure that each file has a structure similar to this one:
 ```js
 {
   "enabled":true,
@@ -76,9 +76,7 @@ Each file has a structure similar to this one:
 }
 ```
 
-
-
-
+The we define the Ansible task like this: 
 
 ```yml
 - name: Creates Characters from files/users/DC
@@ -88,13 +86,17 @@ Each file has a structure similar to this one:
     realm: '{{realm}}'
     token: '<token-goes-Here>'
     endpoint: 'https://another_keycloak_host:8443'
-    folder: files/users/
+    folder: files/users/DC
     state: present
 ```
 
 - **name**: represents the resource name in Keycloak.
-- **id**: allow us to target the field we want to use as unique identifier.
+- **id**: allow us to target the field we want to use as a unique identifier.
   -  Notice that in this case we use ``username`` to uniquely identify our objects.
 - **token**: we have to provide a OpenID token with permissions to perform the operation.
 - **endpoint**: the root http(s) endpoint for the Keycloak server.
-- **payload**: Here we have to provide the path for the JSON template defining the resource. Example:
+- **folder**: the folder where we store the resource definition. 
+- **payload**: Here we have to provide the path for the JSON template defining the resource.
+- **state**: supported states are ``absent``/``present``.
+   - **absent**: Removes matching resources from Keycloak.
+   - **present**: Publish matching resources to Keycloak.
