@@ -5,7 +5,10 @@ Use this module to automate Keycloak configuration.
 
 ## Keycloak Resources
 
-In Keycloak every part of the configuration is defined in the server as a [Restful Resource](https://en.wikipedia.org/wiki/Representational_state_transfer), this makes it easy for us to think about configuration. An example of this resources are: 
+In Keycloak every part of the configuration is defined in the server as a [Restful Resource](https://en.wikipedia.org/wiki/Representational_state_transfer), this interface will allow us to communicate to Keycloak via the [admin REST API](https://access.redhat.com/webassets/avalon/d/red-hat-single-sign-on/version-7.0.0/restapi/). 
+
+
+These are a list of possible resources supported by the module: 
 
 - clients
 - roles
@@ -13,7 +16,11 @@ In Keycloak every part of the configuration is defined in the server as a [Restf
 - components (like Federation, Realms Key Configuration, etc).
 - users
 
-This ansible module basically provides a way to store Keycloak configuration as code, so we can rebuild a Keycloak instance from scratch without visiting the UI.  
+> As long that a particular Keycloak configuration obeys the REST rules, they can be implemented using this module by just providing the correct definition.
+
+[Resource definitions](https://github.com/cesarvr/keycloak-ansible-hello-world/tree/main/files).
+
+
 
 ## Adding One Resource
 
