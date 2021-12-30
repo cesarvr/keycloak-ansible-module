@@ -3,6 +3,44 @@
 Use this module to automate Keycloak configuration.
 
 
+## Login 
+
+Before you can perform any operation you will need an OpenID token with proper permissions, all modules provide a token field in case you can obtain/inject this token by other means. 
+
+But if you have access to the ``admin-cli`` and the ``master`` realm, the ``cesarvr.login`` module can be use to obtain a admin token: 
+
+```yml 
+- name: Login
+  register: session
+  cesarvr.keycloak.login:
+    username: your_admin_user
+    password: your_password
+    endpoint: 'https://my_keycloak.com'
+- debug: var=session
+```
+
+This module returns a object with the ``token`` field which stores the OpenID token: 
+
+```sh
+token: eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJQM1VOM3I4aERNNnlIeWRzNGVucjNncllRMDdYazgySEJmemRVZWx4N29JIn0.eyJqdGkiOiJlNzYyZDhjZS02ZDU5LTRjODktYWMzNi05ZTFmZTIzZDI1ODkiLCJleHAiOjE2NDA4NjI5NzQsIm5iZiI6MCwiaWF0IjoxNjQwODYyOTE0LCJpc3MiOiJodHRwczovL3Nzby1jdmFsZGV6ci1zdGFnZS5hcHBzLnNhbmRib3gtbTIubGw5ay5wMS5vcGVuc2hpZnRhcHBzLmNvbS9hdXRoL3JlYWxtcy9tYXN0ZXIiLCJzdWIiOiIxOTIwNz...
+
+```
+
+We can then save this object into a variable (``session`` in this example) and reuse it accross our tasks like illustrated below: 
+
+```yml
+- name: Creates a realm using the obtained token
+  register: result
+  cesarvr.keycloak.resource:
+    name: realm
+    id: 'id'
+    token: '{{session.result.token}}'
+    endpoint: 'https://my_keycloak.com'
+    payload: files/realm.json
+    state: present
+```
+
+
 ## Keycloak Resources
 
 In Keycloak every part of the configuration is defined in the server as a [Restful Resource](https://en.wikipedia.org/wiki/Representational_state_transfer), this interface will allow us to communicate to Keycloak via the [admin REST API](https://access.redhat.com/webassets/avalon/d/red-hat-single-sign-on/version-7.0.0/restapi/). 
