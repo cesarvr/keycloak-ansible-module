@@ -7,7 +7,7 @@ Use this module to automate Keycloak configuration.
 
 Before you can perform any operation you will need an OpenID token with proper permissions, all modules provide a token field in case you can obtain/inject this token by other means. 
 
-But if you have access to the ``admin-cli`` and the ``master`` realm, the ``cesarvr.login`` module can be use to obtain a admin token: 
+But if you have access to the ``admin-cli`` and the ``master`` realm, the ``keycloak.login`` module can be use to obtain a admin token: 
 
 ```yml 
 - name: Login
