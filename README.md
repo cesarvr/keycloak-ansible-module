@@ -24,7 +24,7 @@ These are a list of possible resources supported by the module:
 
 ## Adding One Resource
 
-This module ``keycloak.resource`` takes care of adding/removing a single resource into Keycloak.
+``keycloak.resource`` takes care of adding/removing a single resource into Keycloak.
 
 
 ### Usage
@@ -64,7 +64,7 @@ Where:
 
 ## Adding Multiple Resources
 
-This module ``keycloak.resources_from_folder`` publishes all the resources in a given folder path.
+``keycloak.resources_from_folder`` publishes all the resources in a given folder path.
 
 ### Usage
 So in this example we want to configure a set of users into keycloak, so first we define each user in a folder like this:
