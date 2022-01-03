@@ -77,9 +77,10 @@ Where:
    - **present**: Publish a resource to the server.
 
 
-#### Payload Example
+#### Payload
 
-This is the minimal template required to create a **Keycloak Realm**:
+We are going to create a realm called ``heroes`` with a JSON definition like the one below:
+
 ```js
   {
     "enabled":true,
