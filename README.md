@@ -80,7 +80,7 @@ Where:
 #### Payload Example
 
 This is the minimal template required to create a **Keycloak Realm**:
->  ```
+```js
   {
     "enabled":true,
     "id":"heroes",
