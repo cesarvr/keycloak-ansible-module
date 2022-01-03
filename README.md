@@ -1,5 +1,5 @@
 # Keycloak
-These Ansible collections provide a set of tools to define Keycloak configuration as code. 
+Ansible collection to define Keycloak configuration as code. 
 
 ## Login 
 
