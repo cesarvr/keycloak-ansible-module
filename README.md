@@ -142,3 +142,9 @@ The we define the Ansible task like this:
 - **state**: supported states are ``absent``/``present``.
    - **absent**: Removes matching resources from Keycloak.
    - **present**: Publish matching resources to Keycloak.
+
+<br>
+
+The end result: 
+
+![](https://github.com/cesarvr/keycloak-ansible-module/blob/main/docs/users.png?raw=true)
