@@ -240,12 +240,11 @@ In this case we want all the DC universe users to belong to their own group, we 
 
 Where: 
 
-- **group**: The name of the group for the users to join. 
-- **roles**: Array with the role names (make sure the roles are created before trying this). 
-- **token**: We have to provide an OpenID token with permissions to perform the operation.
+- **name**: The name of the group for the users to join.  
 - **realm**: (Optional) to target a resource in an specific realm.
-- **folder**: The folder where we store the users definitions.
+- **token**: We have to provide an OpenID token with permissions to perform the operation.
 - **endpoint**: The root http(s) endpoint for the Keycloak server.
+- **folder**: The folder where we store the users definitions.
 - **state**: Supported states are ``absent``/``present``.
    - **absent**: Leave the group.
    - **present**: Join the group.
