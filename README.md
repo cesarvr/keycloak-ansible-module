@@ -1,11 +1,33 @@
 # Keycloak
 These Ansible collections provide a set of tools to define Keycloak configuration as code.
 
+Table of contents
+=================
+
+<!--ts-->
+   * [Login](#login)
+      * [Example](#example)
+   * [Modules](#modules)
+      * [Single Object](#configuring-a-single-object)
+        * [Example](#example-1)
+      * [Configuring Multiple Objects](#configuring-multiple-objects)
+        * [Example](#example-2)
+      * [Creating Roles And Groups](#creating-roles-and-groups)
+        * [Roles](#roles)
+        * [Groups](#group)  
+        * [Add Roles To Group](#add-roles-to-the-group)
+        * [Add Users To Group](#adding-users-to-the-group)
+<!--te-->
+
+
+
+
+
 ## Login
 
 Before you can perform any operation you will need an OpenID token with proper permissions, to get a this token you can use the ``keycloak.login`` module.
 
-#### Example
+#### Login Example
 
 This module requires the [admin-cli](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.0/html/server_administration_guide/sso_protocols#oidc-auth-flows) OpenID client for the **master** in order to work.
 
@@ -46,7 +68,7 @@ We can reuse this value (stored in the ``session`` variable) to perform administ
 
 ## Modules
 
-### Configuring A Single Object
+### Single Configuration Objects
 
 Almost every configuration in Keycloak can be tune using the  [REST API](https://en.wikipedia.org/wiki/Representational_state_transfer), and in order to cover a much as possible we can use the ``keycloak.resource`` module which targets any Keycloak configuration as long as it follows the  [HTTP method convention](https://en.wikipedia.org/wiki/Representational_state_transfer#Semantics_of_HTTP_methods).
 
