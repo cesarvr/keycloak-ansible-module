@@ -150,13 +150,18 @@ The end result:
 
 
 
-### Creating Roles And Groups  
+## Creating Roles And Groups  
 
-A Keycloak group is an entity used to configure a common set of attributes (such as roles) that can be later be asociated to users.   
+A Keycloak group allow us to configure a common set of attributes (for example: roles) in a way that can be shared for one or more users. To exemplify how this work and how we can automate this we are going to create the **DC** group with two roles ``hero, villain`` this way each of our users can inherith this two roles. 
+
+The source code would look like this: 
+
+![](https://github.com/cesarvr/keycloak-ansible-module/blob/main/docs/groups-roles-users.png?raw=true)
+
 
 #### Roles 
 
-To illustrate how to automate this we can start by create a set of roles:
+To add the roles we can use the ``keycloak.resources_from_folder``:
 
 ```yml
 - name: Adding Roles [hero, villain]   
@@ -174,7 +179,7 @@ To illustrate how to automate this we can start by create a set of roles:
 
 #### Group 
 
-Create the group. 
+Create the group, we are going to create a single one so we use the ``keycloak.resource``:
 
 ```yml
 - name: Add DC Group 
@@ -239,6 +244,7 @@ Where:
 - **roles**: Array with the role names (make sure the roles are created before trying this). 
 - **token**: We have to provide an OpenID token with permissions to perform the operation.
 - **realm**: (Optional) to target a resource in an specific realm.
+- **folder**: The folder where we store the users definitions.
 - **endpoint**: The root http(s) endpoint for the Keycloak server.
 - **state**: Supported states are ``absent``/``present``.
    - **absent**: Leave the group.
