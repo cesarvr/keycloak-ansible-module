@@ -138,7 +138,6 @@ The we define the Ansible task like this:
 - **token**: we have to provide an OpenID token with permissions to perform the operation.
 - **endpoint**: the root http(s) endpoint for the Keycloak server.
 - **folder**: the folder where we store the resource definition.
-- **payload**: Here we have to provide the path for the JSON template defining the resource.
 - **state**: supported states are ``absent``/``present``.
    - **absent**: Removes matching resources from Keycloak.
    - **present**: Publish matching resources to Keycloak.
