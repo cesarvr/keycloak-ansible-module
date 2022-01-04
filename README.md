@@ -27,7 +27,7 @@ Table of contents
 
 Before you can perform any operation you will need an OpenID token with proper permissions, to get a this token you can use the ``keycloak.login`` module.
 
-#### Login Example
+#### Example
 
 This module requires the [admin-cli](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.0/html/server_administration_guide/sso_protocols#oidc-auth-flows) OpenID client for the **master** in order to work.
 
