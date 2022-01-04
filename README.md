@@ -7,7 +7,7 @@ Before you can perform any operation you will need an OpenID token with proper p
 
 #### Example
 
-This module requires the [direct-grant](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.0/html/server_administration_guide/sso_protocols#oidc-auth-flows) ``admin-cli`` OpenID client for the **master** in order to work.
+This module requires the [admin-cli](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.0/html/server_administration_guide/sso_protocols#oidc-auth-flows) OpenID client for the **master** in order to work.
 
 ```yml
 tasks:
