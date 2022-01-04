@@ -1,6 +1,7 @@
 # testing
 import os, sys
 
+from .ansible_state import AnsibleState
 from kcapi import Keycloak
 import json
 
@@ -47,27 +48,6 @@ class Action:
         else:
             return self.resource.create(self.body).isOk()
 
-class AnsibleState: 
-    @staticmethod
-    def getAvailableStates():
-        return {
-            "default": "present", 
-            "choices": ['present', 'absent'],  
-            "type": 'str' 
-        }
-
-    def __init__(self):
-        self.choices = {'present': self.present, 'absent': self.absent}
-
-    def run(self, state_choice, filename):
-        self.choices[state_choice](filename)
-
-    def present(self): 
-        return True
-
-    def absent(self): 
-        return True
-
 class AnsibleAction(AnsibleState): 
     def __init__(self, params):
         self.key = params['id'] 
@@ -94,7 +74,7 @@ class GroupsAction(AnsibleState):
     def __init__(self, params):
        self.groupName = params['name']   
        realm = params['realm'] 
-       self.userKey = params['user_id']
+       self.userKey = 'username' if not params['user_id'] else params['user_id']
        self.usersAPI = Resource.createWithName(params, 'users', realm)
 
        super().__init__()
@@ -118,7 +98,7 @@ class GroupsAction(AnsibleState):
         return self.usersAPI.leaveGroup(usr, gpr)
 
 
-class RolesToGroup(AnsibleState): 
+class RolesToGroupAction(AnsibleState): 
     def __init__(self, params):
         self.groupName = params['name']
 
@@ -129,11 +109,11 @@ class RolesToGroup(AnsibleState):
 
     def present(self, roles): 
         group = {"key":"name", "value": self.groupName}
-        return self.groups.addRealmRoles(group, roles)
+        return self.groups.realmRoles(group).add(roles)
         
     def absent(self, roles): 
         group = {"key":"name", "value": self.groupName}
-        return self.groups.removeRealmRoles(group, roles)
+        return self.groups.realmRoles(group).remove(roles)
      
         
         

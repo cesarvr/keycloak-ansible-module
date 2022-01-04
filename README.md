@@ -66,13 +66,14 @@ To create a [realm](https://access.redhat.com/documentation/en-us/red_hat_single
 ```
 
 Where:
-- **name**: represents the [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer) resource name in Keycloak.
-- **id**: allow us to target the field we want to use as a unique identifier.
+- **name**: Represents the [RESTful](https://en.wikipedia.org/wiki/Representational_state_transfer) resource name in Keycloak.
+- **id**: Allow us to target the field we want to use as a unique identifier.
   - In this case the unique identifier is ``id`` for the realm, but other resources may have a different unique field such as ``groups`` that uses ``name`` as the unique identifier.
-- **token**: we have to provide an OpenID token with permissions to perform the operation.
-- **endpoint**: the root http(s) endpoint for the Keycloak server.
+- **token**: We have to provide an OpenID token with permissions to perform the operation.
+- **realm**: (Optional) To target a resource in an specific realm.
+- **endpoint**: The root http(s) endpoint for the Keycloak server.
 - **payload**: Here we have to provide the path for the JSON template defining the resource.
-- **state**: supported states are ``absent``/``present``.
+- **state**: Supported states are ``absent``/``present``.
    - **absent**: Removes a resource from Keycloak.
    - **present**: Publish a resource to the server.
 
@@ -116,8 +117,6 @@ Make sure that each file has a structure similar to this one:
 
 > This definition represents the [Users](https://access.redhat.com/webassets/avalon/d/red-hat-single-sign-on/version-7.0.0/restapi/#_userrepresentation) resource type.
 
-
-
 The we define the Ansible task like this:
 
 ```yml
@@ -132,13 +131,14 @@ The we define the Ansible task like this:
     state: present
 ```
 
-- **name**: represents the resource name in Keycloak.
-- **id**: allow us to target the field we want to use as a unique identifier.
-  -  Notice that in this case we use ``username`` to uniquely identify our objects.
-- **token**: we have to provide an OpenID token with permissions to perform the operation.
-- **endpoint**: the root http(s) endpoint for the Keycloak server.
-- **folder**: the folder where we store the resource definition.
-- **state**: supported states are ``absent``/``present``.
+- **name**: Represents the resource name in Keycloak.
+- **id**: Allow us to target the field we want to use as a unique identifier.
+  -  Notice That in this case we use ``username`` to uniquely identify our objects.
+- **token**: We have to provide an OpenID token with permissions to perform the operation.
+- **realm**: (Optional) To target a resource in an specific realm.
+- **endpoint**: The root http(s) endpoint for the Keycloak server.
+- **folder**: The folder where we store the resource definition.
+- **state**: Supported states are ``absent``/``present``.
    - **absent**: Removes matching resources from Keycloak.
    - **present**: Publish matching resources to Keycloak.
 
@@ -147,3 +147,101 @@ The we define the Ansible task like this:
 The end result: 
 
 ![](https://github.com/cesarvr/keycloak-ansible-module/blob/main/docs/users.png?raw=true)
+
+
+
+### Creating Roles And Groups  
+
+A Keycloak group is an entity used to configure a common set of attributes (such as roles) that can be later be asociated to users.   
+
+#### Roles 
+
+To illustrate how to automate this we can start by create a set of roles:
+
+```yml
+- name: Adding Roles [hero, villain]   
+  cesarvr.keycloak.resources_from_folder: 
+    name: roles 
+    id: name
+    realm: 'heroes'
+    token: '<token>'
+    endpoint: 'https://my_keycloak_host.com' 
+    folder: files/roles/
+    state: present    
+```
+
+> As you can see role is a REST resource so we can use the modules above.
+
+#### Group 
+
+Create the group. 
+
+```yml
+- name: Add DC Group 
+  cesarvr.keycloak.resource: 
+    name: groups 
+    id: name
+    realm: 'heroes'
+    token: '<token>'
+    endpoint: 'https://keycloak_host.com' 
+    payload: files/groups/dc.json
+    state: present    
+```
+
+#### Add Roles To The Group
+
+In order to add roles to the group we need to use the ``keycloak.add_roles_to_group`` module: 
+
+```yml 
+- name: Adding Roles [hero, villain] to DC group   
+  register: result
+  cesarvr.keycloak.add_roles_to_group: 
+    group: DC 
+    roles: 
+      - hero 
+      - villain
+    realm: 'heroes'
+    token: '<token>'
+    endpoint: 'https://keycloak_host.com' 
+    state: present    
+```
+
+Where: 
+
+- **group**: The name of the group where we want to add the roles. 
+- **roles**: Array with the role names (make sure the roles are created before trying this). 
+- **token**: We have to provide an OpenID token with permissions to perform the operation.
+- **realm**: (Optional) to target a resource in an specific realm.
+- **endpoint**: The root http(s) endpoint for the Keycloak server.
+- **state**: Supported states are ``absent``/``present``.
+   - **absent**: Removes matching resources from Keycloak.
+   - **present**: Publish matching resources to Keycloak.
+
+
+#### Adding Users To The Group
+
+In this case we want all the DC universe users to belong to their own group, we can use the ``keycloak.join_group`` module to do that: 
+
+```yml 
+- name: DC Heroes Joining DC Group   
+  cesarvr.keycloak.join_group: 
+    name: DC 
+    realm: '{{realm}}'
+    token: '<token>'
+    endpoint: 'https://keycloak_host.com' 
+    folder: files/users/DC/
+    state: present    
+```
+
+Where: 
+
+- **group**: The name of the group for the users to join. 
+- **roles**: Array with the role names (make sure the roles are created before trying this). 
+- **token**: We have to provide an OpenID token with permissions to perform the operation.
+- **realm**: (Optional) to target a resource in an specific realm.
+- **endpoint**: The root http(s) endpoint for the Keycloak server.
+- **state**: Supported states are ``absent``/``present``.
+   - **absent**: Leave the group.
+   - **present**: Join the group.
+
+
