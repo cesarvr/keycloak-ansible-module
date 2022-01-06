@@ -2,6 +2,7 @@
 import os, sys
 
 from .ansible_state import AnsibleState
+from kcapi.ie import AuthenticationFlowsImporter   
 from kcapi import Keycloak
 import json
 
@@ -43,10 +44,7 @@ class Action:
            return self.resource.removeFirstByKV(key, value)
 
     def create(self, key):
-        if self.__exist(key): 
-            return False
-        else:
-            return self.resource.create(self.body).isOk()
+        return self.resource.create(self.body).isOk()
 
 class AnsibleAction(AnsibleState): 
     def __init__(self, params):
@@ -102,20 +100,46 @@ class RolesToGroupAction(AnsibleState):
     def __init__(self, params):
         self.groupName = params['name']
 
-        realm = params['realm']
-        self.groups = Resource.createWithName(params, 'groups', realm)
+        self.realm = params['realm']
+        self.params = params
        
         super().__init__()
 
     def present(self, roles): 
         group = {"key":"name", "value": self.groupName}
-        return self.groups.realmRoles(group).add(roles)
+        groups = Resource.createWithName(self.params, 'groups', self.realm)
+        return groups.realmRoles(group).add(roles)
         
     def absent(self, roles): 
         group = {"key":"name", "value": self.groupName}
-        return self.groups.realmRoles(group).remove(roles)
+        groups = Resource.createWithName(self.params, 'groups', self.realm)
+        return groups.realmRoles(group).remove(roles)
      
         
+class AuthenticationFlowAction(AnsibleState): 
+    def __init__(self, params):
+        realm = params['realm']
+        self.parent = readFromJSON(params['parent_flow'])
+        self.payload = readFromJSON(params['payload']) 
+        self.flowAPI = Resource.createWithName(params, 'authentication', realm)
+        self.publisher = AuthenticationFlowsImporter(self.flowAPI)  
+       
+        super().__init__()
+
+    def present(self, filename): 
+        self.flowAPI.create(self.parent).isOk()
+        return self.publisher.publish(self.parent, self.payload)
+        
+    def absent(self, filename): 
+        alias = self.parent['alias']
+        exist = self.flowAPI.existByKV('alias', self.parent['alias'])
+
+        if exist:
+            return self.flowAPI.removeFirstByKV('alias',alias)
+        else:
+            return False
+
+     
         
 
 

@@ -18,9 +18,9 @@ def main():
     module.params['name'] = module.params['group']
 
     group = RolesToGroupAction(params = module.params)
-    change_state = group.run(choice, roles) 
+    resp = group.run(choice, roles) 
 
-    module.exit_json(changed=change_state, result={'state': True, 'list': roles })
+    module.exit_json(changed=resp.isOk(), result={'state': True, 'list': roles })
 
 if __name__ == '__main__':
     main()
