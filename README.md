@@ -236,7 +236,7 @@ In order to add roles to the group we need to use the ``keycloak.add_roles_to_gr
 Where: 
 
 - **group**: The name of the group where we want to add the roles. 
-- **roles**: Array with the role names (make sure the roles are created before trying this). 
+- **roles**: Array with the role names (the roles need to exist). 
 - **token**: We have to provide an OpenID token with permissions to perform the operation.
 - **realm**: (Optional) to target a resource in an specific realm.
 - **endpoint**: The root http(s) endpoint for the Keycloak server.
