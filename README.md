@@ -364,7 +364,7 @@ with open('flows.json', 'w') as fp:
 > Before running this install unofficial [Keycloak API](https://pypi.org/project/kcapi/).   
 
 
-The script above will store your custom flow navigation into a file called ``flow.json`` which you can then use to deploy your custom authentication flow to any Keycloak instances using the Ansible module: 
+The script above will store your custom flow navigation into a file called ``flow.json`` which you can then deploy to any Keycloak instances using the Ansible module: 
 
 ```yml
 - name: Adding Custom Registration
