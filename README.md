@@ -17,7 +17,7 @@ Table of contents
         * [Groups](#group)  
         * [Add Roles To Group](#add-roles-to-the-group)
         * [Add Users To Group](#adding-users-to-the-group)
-      * [Adding Custom Flows](#adding-custom-flows)
+      * [Adding Custom Flows](#adding-custom-authentication-flows)
         * [New Flow](#adding-custom-flows)   
         * [Flow Body](#flows-and-executors)   
         * [Import](#import)
@@ -311,36 +311,43 @@ Where:
 
 > A big part of this is the ``actions`` section, because this is the template that defines the steps in the flow to be taken. 
 
-#### Nested Flows And Executors
 
-In order to add more steps we would need a template similar to this: 
+#### Import And Publishing 
+If you feel strong you can define each step (executors/nested flows) in the flow by hand, in which case the structure looks similar to this: 
 
-```json
-[
+```yml
+[ {
+        "authenticationFlow": true,
+        "configurable": false,
+        "displayName": "Login Page",
+        "index": 0,
+        "level": 0,
+        "providerId": "registration-page-form",
+        "requirement": "REQUIRED",
+        "requirementChoices": [
+            "REQUIRED",
+            "DISABLED"
+        ]
+    },
     {
         "authenticationFlow": true,
         "configurable": false,
-        "displayName": "_xx1_",
-        "index": 0,
+        "displayName": "OTP Step",
+        "index": 1,
         "level": 0,
-        "requirement": "REQUIRED",
+        "requirement": "DISABLED",
         "requirementChoices": [
             "ALTERNATIVE",
             "REQUIRED",
             "DISABLED"
         ]
-    },
-    ...
- ]
+    }, /*...*/ ]
 ```
 
-> As you can see is an array with steps divided by executors / flows which are their internal Keycloak names.  
-> For more information here is the [official documentation.](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows).
 
-#### Publishing 
-If you feel strong you can define each of those steps (executors/nested flows) by hand, but there is a better way to do this by defining the [custom flows](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) using an existing instance of Keycloak, and once we are satisfied we can import it and store it as code. 
+But there is a better way to do this, we can define the [navigation flow](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) using the Keycloak UI and once we are satisfied with the end result we store the generated template. We can do this via Chrome Dev Tool by intercepting the network calls or a more civil way would be to use this Python script. 
 
-You can import it via Chrome by intercepting the calls or if you prefer a scripted way in order to automate you can use this Python script which in turn uses the unofficial [Keycloak API](https://pypi.org/project/kcapi/): 
+First make sure you install unofficial [Keycloak API](https://pypi.org/project/kcapi/) and the write the following:   
 
 ```python
 import json
