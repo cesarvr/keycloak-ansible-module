@@ -17,6 +17,10 @@ Table of contents
         * [Groups](#group)  
         * [Add Roles To Group](#add-roles-to-the-group)
         * [Add Users To Group](#adding-users-to-the-group)
+      * [Adding Custom Flows](#adding-custom-flows)
+        * [New Flow](#adding-custom-flows)   
+        * [Flow Body](#flows-and-executors)   
+        * [Import](#import)
 <!--te-->
 
 
@@ -346,7 +350,7 @@ Once you got this two objects then you can use the module to define a [custom fl
 ```
 
 
-#### How To Import The 
+#### Import 
 
 Usually is not a good idea to define the flows manually using JSON, what we can do instead is to design our flow using an existing instance of Keycloak, and once we are satisfied we can import it and store it as code. To do this we can use a [Keycloak API](https://pypi.org/project/kcapi/) writen in Python using the following script: 
 
