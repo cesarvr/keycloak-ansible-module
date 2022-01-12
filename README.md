@@ -362,10 +362,11 @@ ENDPOINT = 'https://your-keycloak-instance/'
 
 token = OpenID.createAdminClient('user', 'password').getToken(ENDPOINT)
 
-flows = Keycloak(token, ENDPOINT).build('authentication',realm='realm-name').executions({'alias': 'the_name_of_your_flow'}).all()
+flows = Keycloak(token, ENDPOINT).build('authentication',realm='realm-name')
+flow_steps = flows.executions({'alias': 'the_name_of_your_flow'}).all()
 
 with open('flows.json', 'w') as fp:
-    json.dump(flows, fp)
+    json.dump(flow_steps, fp)
 ```
 
 
