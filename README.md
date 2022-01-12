@@ -18,9 +18,7 @@ Table of contents
         * [Add Roles To Group](#add-roles-to-the-group)
         * [Add Users To Group](#adding-users-to-the-group)
       * [Adding Custom Flows](#adding-custom-authentication-flows)
-        * [New Flow](#adding-custom-flows)   
-        * [Flow Body](#flows-and-executors)   
-        * [Import](#import)
+        * [Import & Publishing](#import-and-publishing)   
 <!--te-->
 
 
