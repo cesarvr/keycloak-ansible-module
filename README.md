@@ -343,9 +343,9 @@ If you feel strong you can define each step (executors/nested flows) in the flow
 ```
 
 
-But there is a better way to do this, we can define the [navigation flow](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) using the Keycloak UI and once we are satisfied with the end result we store the generated template. We can do this via Chrome Dev Tool by intercepting the network calls or a more elegant way would be to use this Python script. 
+But there is a better way to do this, we can define the [navigation flow](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) using the Keycloak UI and once we are satisfied fetch the template using Chrome Dev Tool to intercepting the network calls or the more elegant way of writing a Python script. 
 
-First make sure you install unofficial [Keycloak API](https://pypi.org/project/kcapi/) and the write the following:   
+
 
 ```python
 import json
@@ -361,17 +361,17 @@ flow_steps = flows.executions({'alias': 'the_name_of_your_flow'}).all()
 with open('flows.json', 'w') as fp:
     json.dump(flow_steps, fp)
 ```
-> This will store your custom flow navigation into a file called ``flow.json``. 
+> Before running this install unofficial [Keycloak API](https://pypi.org/project/kcapi/).   
 
 
-Now you can publish your custom navigation to other Keycloak instances like this: 
+The script above will store your custom flow navigation into a file called ``flow.json`` which you can then use to deploy your custom authentication flow to any Keycloak instances using the Ansible module: 
 
 ```yml
 - name: Adding Custom Registration
   cesarvr.keycloak.authentication_flow: 
     name: My Custom Flow 
     description: Nice Description Of An Authentication Flow.  
-    actions: flow.json
+    actions: flow.json # <- Here
     realm: '{{realm}}'
     token: '{{session.result.token}}'
     endpoint: '{{endpoint_rhsso}}' 
