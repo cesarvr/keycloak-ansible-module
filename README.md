@@ -272,3 +272,99 @@ Where:
    - **present**: Join the group.
 
 
+
+
+## Adding Custom Flows
+
+One of the nice features of Keycloak is the ability to customize authentication flows to add for example an additional screen for OTP, you can store this in two files. 
+
+#### Parent Flow 
+
+![Screenshot 2022-01-12 at 14 21 56](https://user-images.githubusercontent.com/3899337/149148305-e8eb5811-ff1b-42e3-94a8-98a068da94b4.png)
+
+The parent flow is basically at the name of the set storing the flow steps, it has a description file similar to this
+
+
+
+**Sample Structure**
+
+```json
+{
+        "alias": "my_custom_authentication_flow",
+        "builtIn": false,
+        "description": "My Custom HTTP Authentication Schemes",
+        "providerId": "basic-flow",
+        "topLevel": true
+}
+```
+> Let's call it ``parent-flow.json``. 
+
+
+
+#### Flows And Executors
+
+![Screenshot 2022-01-12 at 14 26 58](https://user-images.githubusercontent.com/3899337/149149077-c06c4d68-a670-4dcb-a640-df9a94a35826.png)
+
+Once we got our parent flow, we can customize its behaviour by adding new flows and executors for more info on this you can take a look at the [official documentation](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows).
+
+**Sample Structure**
+```json
+[
+    {
+        "authenticationFlow": true,
+        "configurable": false,
+        "displayName": "_xx1_",
+        "flowId": "a9e6371b-e6fb-44d0-8994-9c1e66ba0ced",
+        "id": "3bbe9680-70d9-4334-afd8-dd6d3d453fd0",
+        "index": 0,
+        "level": 0,
+        "requirement": "REQUIRED",
+        "requirementChoices": [
+            "ALTERNATIVE",
+            "REQUIRED",
+            "DISABLED"
+        ]
+    },
+    ...
+ ]
+```
+
+#### Publishing 
+Once you got this two objects then you can use the module to define a [custom flow](](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) like this: 
+
+
+```yml
+  - name: Adding Custom Registration
+      cesarvr.keycloak.authentication_flow: 
+        name: authentication 
+        parent_flow: files/my-custom-registration/parent-flow.json
+        realm: '{{realm}}'
+        token: '{{session.result.token}}'
+        endpoint: '{{endpoint_rhsso}}' 
+        payload: files/my-custom-registration/executors/navigation-flow.json
+        state: present   
+```
+
+
+#### How To Import The 
+
+Usually is not a good idea to define the flows manually using JSON, what we can do instead is to design our flow using an existing instance of Keycloak, and once we are satisfied we can import it and store it as code. To do this we can use a [Keycloak API](https://pypi.org/project/kcapi/) writen in Python using the following script: 
+
+```python
+import json
+from kcapi import OpenID, Keycloak
+
+ENDPOINT = 'https://your-keycloak-instance/'
+
+token = OpenID.createAdminClient('user', 'password').getToken(ENDPOINT)
+
+flows = Keycloak(token, ENDPOINT).build('authentication',realm='realm-name').executions({'alias': 'the_name_of_your_flow'}).all()
+
+with open('flows.json', 'w') as fp:
+    json.dump(flows, fp)
+```
+
+
+
+
+
