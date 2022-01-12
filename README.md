@@ -334,7 +334,7 @@ Once we got our parent flow, we can customize its behaviour by adding new flows 
 ```
 
 #### Publishing 
-Once you got this two objects then you can use the module to define a [custom flow](](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) like this: 
+Once you got this two objects then you can use the module to define a [custom flow](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) like this: 
 
 
 ```yml
