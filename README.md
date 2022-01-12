@@ -19,7 +19,7 @@ Table of contents
         * [Add Users To Group](#adding-users-to-the-group)
       * [Adding Custom Flows](#adding-custom-authentication-flows)
         * [Import & Publishing](#import-and-publishing)   
-      * [Simple Hello World Project](https://github.com/cesarvr/keycloak-ansible-hello-world)
+      * [Hello World Project](https://github.com/cesarvr/keycloak-ansible-hello-world)
 <!--te-->
 
 
