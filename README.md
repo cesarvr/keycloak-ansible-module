@@ -343,7 +343,7 @@ If you feel strong you can define each step (executors/nested flows) in the flow
 ```
 
 
-But there is a better way to do this, we can define the [navigation flow](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) using the Keycloak UI and once we are satisfied with the end result we store the generated template. We can do this via Chrome Dev Tool by intercepting the network calls or a more civil way would be to use this Python script. 
+But there is a better way to do this, we can define the [navigation flow](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) using the Keycloak UI and once we are satisfied with the end result we store the generated template. We can do this via Chrome Dev Tool by intercepting the network calls or a more elegant way would be to use this Python script. 
 
 First make sure you install unofficial [Keycloak API](https://pypi.org/project/kcapi/) and the write the following:   
 
