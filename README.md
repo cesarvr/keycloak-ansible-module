@@ -278,48 +278,49 @@ Where:
 
 
 
-## Adding Custom Flows
+## Adding Custom Authentication Flows
 
-One of the nice features of Keycloak is the ability to customize authentication flows to add for example an additional screen for OTP, you can store this in two files. 
-
-#### Parent Flow 
-
-![Screenshot 2022-01-12 at 14 21 56](https://user-images.githubusercontent.com/3899337/149148305-e8eb5811-ff1b-42e3-94a8-98a068da94b4.png)
-
-The parent flow is basically at the name of the set storing the flow steps, it has a description file similar to this
-
-
-
-**Sample Structure**
-
-```json
-{
-        "alias": "my_custom_authentication_flow",
-        "builtIn": false,
-        "description": "My Custom HTTP Authentication Schemes",
-        "providerId": "basic-flow",
-        "topLevel": true
-}
-```
-> Let's call it ``parent-flow.json``. 
-
-
-
-#### Flows And Executors
+One of the nice features of Keycloak is that you can customize authentications flows, like for example adding an additional screen for OTP. What is not so nice is that there is no easy way to copy this configuration across Keycloak instances, until now of course. 
 
 ![Screenshot 2022-01-12 at 14 26 58](https://user-images.githubusercontent.com/3899337/149149077-c06c4d68-a670-4dcb-a640-df9a94a35826.png)
 
-Once we got our parent flow, we can customize its behaviour by adding new flows and executors for more info on this you can take a look at the [official documentation](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows).
+Let's start by defining the Ansible module that publishes flows in Keycloak called ``authentication_flow``: 
 
-**Sample Structure**
+```yml
+- name: Adding Custom Registration
+  cesarvr.keycloak.authentication_flow: 
+    name: My Custom Flow 
+    description: Nice Description Of An Authentication Flow.  
+    actions: files/my-custom-registration/custom-flow.json
+    realm: '{{realm}}'
+    token: '{{session.result.token}}'
+    endpoint: '{{endpoint_rhsso}}' 
+    state: present    
+```
+Where: 
+
+- **name**: The name of the custom authentication flow. 
+- **description**: Short description of what it does. 
+- **actions**: JSON template with all the executors, nested flows, etc. More details below. 
+- **realm**: (Optional) to target a resource in an specific realm.
+- **endpoint**: The root http(s) endpoint for the Keycloak server.
+- **token**: We have to provide an OpenID token with permissions to perform the operation.
+- **state**: Supported states are ``absent``/``present``.
+   - **absent**: Removes the flow from Keycloak.
+   - **present**: Publish the flow from Keycloak.
+
+> A big part of this is the ``actions`` section, because this is the template that defines the steps in the flow to be taken. 
+
+#### Nested Flows And Executors
+
+In order to add more steps we would need a template similar to this: 
+
 ```json
 [
     {
         "authenticationFlow": true,
         "configurable": false,
         "displayName": "_xx1_",
-        "flowId": "a9e6371b-e6fb-44d0-8994-9c1e66ba0ced",
-        "id": "3bbe9680-70d9-4334-afd8-dd6d3d453fd0",
         "index": 0,
         "level": 0,
         "requirement": "REQUIRED",
@@ -333,26 +334,13 @@ Once we got our parent flow, we can customize its behaviour by adding new flows 
  ]
 ```
 
+> As you can see is an array with steps divided by executors / flows which are their internal Keycloak names.  
+> For more information here is the [official documentation.](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows).
+
 #### Publishing 
-Once you got this two objects then you can use the module to define a [custom flow](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) like this: 
+If you feel strong you can define each of those steps (executors/nested flows) by hand, but there is a better way to do this by defining the [custom flows](https://access.redhat.com/documentation/en-us/red_hat_single_sign-on/7.2/html/server_administration_guide/authentication#authentication-flows) using an existing instance of Keycloak, and once we are satisfied we can import it and store it as code. 
 
-
-```yml
-  - name: Adding Custom Registration
-      cesarvr.keycloak.authentication_flow: 
-        name: authentication 
-        parent_flow: files/my-custom-registration/parent-flow.json
-        realm: '{{realm}}'
-        token: '{{session.result.token}}'
-        endpoint: '{{endpoint_rhsso}}' 
-        payload: files/my-custom-registration/executors/navigation-flow.json
-        state: present   
-```
-
-
-#### Import 
-
-Usually is not a good idea to define the flows manually using JSON, what we can do instead is to design our flow using an existing instance of Keycloak, and once we are satisfied we can import it and store it as code. To do this we can use a [Keycloak API](https://pypi.org/project/kcapi/) writen in Python using the following script: 
+You can import it via Chrome by intercepting the calls or if you prefer a scripted way in order to automate you can use this Python script which in turn uses the unofficial [Keycloak API](https://pypi.org/project/kcapi/): 
 
 ```python
 import json
@@ -368,7 +356,22 @@ flow_steps = flows.executions({'alias': 'the_name_of_your_flow'}).all()
 with open('flows.json', 'w') as fp:
     json.dump(flow_steps, fp)
 ```
+> This will store your custom flow navigation into a file called ``flow.json``. 
 
+
+Now you can publish your custom navigation to other Keycloak instances like this: 
+
+```yml
+- name: Adding Custom Registration
+  cesarvr.keycloak.authentication_flow: 
+    name: My Custom Flow 
+    description: Nice Description Of An Authentication Flow.  
+    actions: flow.json
+    realm: '{{realm}}'
+    token: '{{session.result.token}}'
+    endpoint: '{{endpoint_rhsso}}' 
+    state: present  
+```
 
 
 
