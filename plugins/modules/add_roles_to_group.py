@@ -17,8 +17,8 @@ def main():
     roles = module.params['roles'] 
     module.params['name'] = module.params['group']
 
-    group = RolesToGroupAction(params = module.params)
-    resp = group.run(choice, roles) 
+    group = RolesToGroupAction(params = module.params, roles = roles)
+    resp = group.run(choice)
 
     module.exit_json(changed=resp.isOk(), result={'state': True, 'list': roles })
 

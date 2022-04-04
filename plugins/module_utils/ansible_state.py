@@ -18,14 +18,13 @@ class AnsibleState:
     def __init__(self):
         self.choices = {'present': self.present, 'absent': self.absent}
 
-    def run(self, choice, filename):
+    def run(self, choice):
         if choice == 'present':
-            self.absent(filename)
-
-            return self.present(filename)
+            self.absent()
+            return self.present()
 
         if choice == 'absent':
-            return self.absent(filename)
+            return self.absent()
 
     def present(self): 
         return True

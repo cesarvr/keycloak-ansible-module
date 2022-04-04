@@ -27,8 +27,8 @@ fields = {
     }
 
 def main():
-    module = AnsibleModule(argument_spec=fields)
-    groups = GroupsAction(params = module.params)
+    module = AnsibleModule(argument_spec=fields, )
+
     folder = module.params['folder']
     choice = module.params['state']
     jsonFileList = get_json_docs_from_folder(folder)  
@@ -36,7 +36,8 @@ def main():
     changes = 0
 
     for fileName in jsonFileList:
-        changes += 1 if groups.run(choice, fileName) else 0
+        groups = GroupsAction(params=module.params, fileName=fileName)
+        changes += 1 if groups.run(choice) else 0
 
     module.exit_json(changed=changes>0, result={'state': True})
 

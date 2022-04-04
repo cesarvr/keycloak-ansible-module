@@ -34,7 +34,7 @@ options:
       - A valid URL pointing to Keycloak. (example: https://mykeycloak.org or https://100.1.2.3:8443)
     required: True
     type: str
-  payload: 
+  payloads: 
     description: 
       - The content of a JSON file with the description of the resource.
     required: True
@@ -61,7 +61,7 @@ EXAMPLES = r"""
     realm: 'heroes'
     token: '<your-token-goes-here>'
     endpoint: 'https://my_keycloak_server' 
-    payload: files/clients/marvel.json
+    payloads: files/clients/marvel.json
     state: present   
 
 - name: Creates a realm 
@@ -70,7 +70,7 @@ EXAMPLES = r"""
     id: 'id'
     token: '<your-token-goes-here>'
     endpoint: 'https://my_keycloak_server' 
-    payload: files/realm.json
+    payloads: files/realm.json
     state: present    
 
 
@@ -80,7 +80,7 @@ EXAMPLES = r"""
     id: 'id'
     token: '<your-token-goes-here>'
     endpoint: 'https://my_keycloak_server' 
-    payload: files/realm.json
+    payloads: files/realm.json
     state: absent    
 """
 
@@ -100,12 +100,11 @@ fields = {
 def main():
 
     module = AnsibleModule(argument_spec=fields)
-    fileName = module.params['payload']
     ansibleAction = AnsibleAction(params=module.params)
 
     state_choice = module.params['state']
-    state = ansibleAction.run(state_choice, fileName)
-    module.exit_json(changed=state, result={'state': True})
+    state = ansibleAction.run(state_choice)
+    module.exit_json(changed=state, result={'state': True, 'name': ansibleAction.identifier})
 
 if __name__ == '__main__':
     main()

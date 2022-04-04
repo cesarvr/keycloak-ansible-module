@@ -290,7 +290,8 @@ Let's start by defining the Ansible module that publishes flows in Keycloak call
   cesarvr.keycloak.authentication_flow: 
     name: My Custom Flow 
     description: Nice Description Of An Authentication Flow.  
-    actions: files/my-custom-registration/custom-flow.json
+    parent_flow: files/my-custom-registration/custom-flow.json
+    payload: files/my-custom-registration/executors/flow-tree.json
     realm: '{{realm}}'
     token: '{{session.result.token}}'
     endpoint: '{{endpoint_rhsso}}' 
@@ -300,15 +301,14 @@ Where:
 
 - **name**: The name of the custom authentication flow. 
 - **description**: Short description of what it does. 
-- **actions**: JSON template with all the executors, nested flows, etc. More details below. 
-- **realm**: (Optional) to target a resource in an specific realm.
+- **parent_flow**: JSON template with the parent flow definition.
+- **payload**: JSON template with all the dependant flows and executors that conform this login flow.
+- **realm**: (Optional) to target a resource in a specific realm.
 - **endpoint**: The root http(s) endpoint for the Keycloak server.
 - **token**: We have to provide an OpenID token with permissions to perform the operation.
 - **state**: Supported states are ``absent``/``present``.
    - **absent**: Removes the flow from Keycloak.
    - **present**: Publish the flow from Keycloak.
-
-> A big part of this is the ``actions`` section, because this is the template that defines the steps in the flow to be taken. 
 
 
 #### Import And Publishing 
@@ -368,15 +368,15 @@ with open('flows.json', 'w') as fp:
 The script above will store your custom flow navigation into a file called ``flow.json`` which you can then deploy to any Keycloak instances using the Ansible module: 
 
 ```yml
-- name: Adding Custom Registration
-  cesarvr.keycloak.authentication_flow: 
-    name: My Custom Flow 
-    description: Nice Description Of An Authentication Flow.  
-    actions: flow.json # <- Here
-    realm: '{{realm}}'
-    token: '{{session.result.token}}'
-    endpoint: '{{endpoint_rhsso}}' 
-    state: present  
+    - name: Adding Custom Registration
+      cesarvr.keycloak.authentication_flow: 
+        name: authentication_flow
+        parent_flow: files/my-custom-registration/parent-flow.json
+        realm: '{{realm}}'
+        token: '{{session.result.token}}'
+        endpoint: '{{endpoint_rhsso}}' 
+        payload: files/my-custom-registration/executors/flow-tree.json
+        state: present
 ```
 
 
